@@ -1,6 +1,6 @@
 CLEAN ARCHITECTURE REFACTORING DOCUMENTATION - SHOP PURCHASE SYSTEM
 
-1. Main problems of the orignila design
+1. MAIN PROBLEMS OF ORIGINAL DESIGN
 
 - Violation of single responsability principle: the original ShopManager mixed presentation (UI Text, Button interactable changes),  business validation mechanics, hardcoded configuration values, data persistence via PlayerPrefs, and audio execution paths within a single MonoBehaviour file.
 
