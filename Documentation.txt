@@ -1,0 +1,40 @@
+CLEAN ARCHITECTURE REFACTORING DOCUMENTATION - SHOP PURCHASE SYSTEM
+
+1. Main problems of the orignila design
+
+- Violation of single responsability principle: the original ShopManager mixed presentation (UI Text, Button interactable changes),  business validation mechanics, hardcoded configuration values, data persistence via PlayerPrefs, and audio execution paths within a single MonoBehaviour file.
+
+- Testing difficulties: since it used a single monobehaviour and Unity PlayerPrefs configurations, testing outside of unity was imposible.
+
+- Scalability issues: adding functions, new products, etc. would have meant to modify the core file.
+
+2. RESPONSIBILITIES OF EACH LAYER IN YOUR SOLUTION
+
+- Domain Layer:  contains purely basic C# system definitions. It remains completely oblivious to Unity, UI, or how data is persisted.
+
+- Application Layer: based inside the BuyItemUseCase class. Executes the step-by-step business rule validations (coin balancing, level requirements, ownership verification) and  handles state modifications safely (eg. purchase execution, leveling up).
+
+- Infrastructure Layer: translates the player object (done with pure csharp) into Unity's saving system. 
+
+- Presentation: handled by the ShopView, this script controls the actual UI on the screen. It takes simple data from the shop system, decides which buttons should be clickable based on that data, updates the text numbers, and figures out whether to play the purchase sound or show an error message.
+
+3. EXPLANATION OF YOUR USE CASES
+
+- GetCurrentStatus: This grabs the player's latest information (like coins and levels) and packages it up for the UI. It checks if the player can afford items or if they hit a purchase limit, but it only looks at the data—it doesn't change anything.
+
+- Execute (Buy Item): This takes the item the player clicked on and runs it through the shop rules. If everything passes, it subtracts the coins, adds the item, saves the game, and says the purchase worked. If a rule is broken, it stops right away and sends back a message explaining what went wrong.
+
+-LevelUpPlayer / AddCoins / ResetProfile (Developer Tools): These are helper actions built to let us change the game data safely. Instead of letting the UI buttons change variables directly, these actions take care of adding 100 coins, raising the level, or wiping everything back to the starting setup (500 coins, Level 1) while making sure the changes are saved instantly.
+
+4. EXPLANATION OF HOW PERSISTENCE IS ABSTRACTED
+
+I made a simple checklist (an interface) with plain C# instructions for loading and saving. The core shop logic only follows this checklist and doesn't know or care how the data is actually saved to a file. Instead, a script called the "StoreInitializer" (the Bootstrap) handles the real saving setup behind the scenes when the game starts up.
+
+5. EXPLANATION OF HOW YOUR SOLUTION CAN BE TESTED WITHOUT UNITY
+
+Because my shop rules are written in plain C#, I don’t need to open Unity or run the game to test them. Instead, I can write small, automated test scripts that pretend to be the player repository using fake data saved in computer memory. This lets me instantly check that coins are subtracted correctly, items are added, and games are saved—all in less than a second without ever launching a Unity game build.
+
+6. BRIEF JUSTIFICATION OF WHY YOUR SOLUTION IS BETTER THAN THE ORIGINAL
+
+Taking into account the main problems from the start, I would say that the main reasons that it is better are the single responsability principle is respected, it is fully testable without the need of unity and I respected 
+the Open/Close principile, taking care of the scalabilty issues.
